@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Database (Keep your local DB out of Git)
+*.sqlite3
+
+# Static & Media
+static/
+media/
+
+# Sensitive Info
+.env
+secret_key.txt
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
