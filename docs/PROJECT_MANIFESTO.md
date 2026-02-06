@@ -1,0 +1,2 @@
+We are working on a 30-day group project called UniDeal, a campus marketplace using Django, jQuery, and Bootstrap. We are using a Service Layer pattern and SQLite. 
+We are rotating roles (Backend, Frontend, Testing) across 4 Sprints.

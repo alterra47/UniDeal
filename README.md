@@ -72,6 +72,7 @@ unideal/
 │   └── static/         # jQuery scripts and custom CSS
 ├── manage.py
 └── .gitignore
+├── docs/               # Add diagrams for signup, login here; Files that explain the working of this project and its components
 
 ```
 
