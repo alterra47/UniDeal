@@ -66,10 +66,10 @@ python manage.py runserver
 
 ```text
 unideal/
-├── core/               # Global settings and URL routing
+├── core/               # Buisness Logic
 ├── templates/          # Global Bootstrap base and shared components
 ├── marketplace/        # Main app for listings and user profiles
-│   ├── services.py     # Business logic (Design Principle: SRP)
+│   ├── services.py     # (Design Principle: SRP)
 │   ├── tests/          # Unit and Integration tests
 │   └── static/         # jQuery scripts and custom CSS
 ├── manage.py
