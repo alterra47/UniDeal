@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniDeal – Create Account</title>
+
+   <link rel="stylesheet" href="{% static 'login-signup.css' %}">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{% static 'js/auth.js' %}" defer></script>
+
+</head>
+<body>
+
+<div class="page">
+    <div class="card">
+
+        <h1 class="brand">
+            <span class="unib">Uni</span><span class="dealb">Deal</span>
+        </h1>
+
+        <p class="subtitle">make it yours</p>
+
+        <form id="signupForm">
+
+            <label>Username</label>
+            <input type="text" id="signupUsername" placeholder="your username">
+            <div class="error" id="signupUsernameError"></div>
+
+            <label>Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="signupPassword" placeholder="••••••••">
+                <span class="toggle-password" data-target="signupPassword">👁</span>
+            </div>
+            <div class="error" id="signupPasswordError"></div>
+
+            <label>Confirm password</label>
+            <div class="password-wrapper">
+                <input type="password" id="signupConfirm" placeholder="••••••••">
+                <span class="toggle-password" data-target="signupConfirm">👁</span>
+            </div>
+            <div class="error" id="signupConfirmError"></div>
+
+            <button type="submit">Create account</button>
+        </form>
+
+        <p class="footer-text">
+            Already here? <a href="{% url 'login' %}">Sign in</a>
+
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniDeal | Campus Marketplace</title>
+
+    <link rel="stylesheet" href="{% static 'main-before-login-style.css' %}">
+
+
+   
+
+</head>
+
+
+<body>
+
+{% load static %}
+
+<header class="navbar">
+    <div class="container-nav">
+        <h1 class="nav-brand">
+            <span class="unib">Uni</span><span class="dealb">Deal</span>
+        </h1>
+        <nav class="nav-links">
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}" class="btn-nav">Sign Up</a>
+        </nav>
+    </div>
+</header>
+
+
+<!-- HERO CAROUSEL -->
+<section class="hero-carousel">
+
+    <div class="slide active" style="background-image: url('https://i.redd.it/amul-high-protein-shake-v0-6e0lg0kqthie1.jpg?width=4080&format=pjpg&auto=webp&s=75c2c95cba7d4d3965c8be0d55d5eabaca781e90');">
+        <div class="slide-content">
+            <h2>Create your own market</h2>
+
+            <p>If you use it, you can sell it</p>
+        </div>
+    </div>
+
+    <div class="slide" style="background-image: url('https://images.pexels.com/photos/3394662/pexels-photo-3394662.jpeg');">
+        <div class="slide-content">
+            <h2>Books. Headphones. Everyday campus finds</h2>
+            <p>Buy and sell what your peers actually use</p>
+        </div>
+    </div>
+
+    <div class="slide" style="background-image: url('https://images.pexels.com/photos/12725055/pexels-photo-12725055.jpeg');">
+        <div class="slide-content">
+            <h2>Sneakers. Style your fit.</h2>
+            <p>Sporty, casual, or classic — find your perfect pair</p>
+        </div>
+    </div>
+
+    
+
+    <div class="slide" style="background-image: url('https://images.pexels.com/photos/4498143/pexels-photo-4498143.jpeg');">
+        <div class="slide-content">
+            <h2>Good jeans deserve a second&nbsp;life.</h2>
+
+            <p>Thrift, reuse, and keep campus fashion moving</p>
+        </div>
+    </div>
+    <div class="slide" style="background-image: url('https://images.pexels.com/photos/8135288/pexels-photo-8135288.jpeg');">
+        <div class="slide-content">
+            <h2>Upgrade your room without overspending</h2>
+
+            <p>Discover well-kept furniture at campus-friendly prices</p>
+        </div>
+    </div>
+    
+    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1620663858647-89b695e62d45?q=80&w=2231&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+        <div class="slide-content">
+            <h2>Quick bites. Late nights.</h2>
+
+            <p>Cravings don’t wait. Neither should your snacks.</p>
+        </div>
+    </div>
+    <button class="carousel-btn prev">‹</button>
+    <button class="carousel-btn next">›</button>
+
+
+</section>
+
+
+<!-- COMMUNITY GATE -->
+<section class="community-gate">
+    <h2 class="gate-title">
+    BUY. SELL.
+    <span class="sticker">ANYTHING</span>
+</h2>
+
+
+    <p class="gate-subtitle">
+        From books to sneakers, gadgets to furniture —  
+        if students use it, it belongs here.
+    </p>
+
+    <p class="gate-note">
+        UniDeal is a college <strong>EXCLUSIVE</strong> marketplace.  
+        <br>Listings are visible only after you join the community.
+    </p>
+
+    <div class="gate-actions">
+        <a href="{% url 'signup' %}" class="btn-primary">Join Your Campus</a>
+        <a href="{% url 'login' %}" class="btn-secondary">Already a member? Login</a>
+
+    </div>
+</section>
+
+
+
+<section class="features">
+
+    <div class="feature-box">
+        <h3>Post Items</h3>
+        <p>Share what you want to sell or exchange.</p>
+    </div>
+
+    <div class="feature-box">
+        <h3>Browse Deals</h3>
+        <p>Explore listings from your college network.</p>
+    </div>
+
+    <div class="feature-box">
+        <h3>Connect</h3>
+        <p>Chat and negotiate right within the platform.</p>
+    </div>
+
+</section>
+
+
+
+
+
+
+
+
+<!-- FOOTER -->
+<footer class="footer-landing">
+    <p>© 2026 UniDeal — College Exclusive Marketplace</p>
+</footer>
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const slides = document.querySelectorAll(".slide");
+    const prevBtn = document.querySelector(".carousel-btn.prev");
+    const nextBtn = document.querySelector(".carousel-btn.next");
+
+    let current = 0;
+    let interval;
+
+    function showSlide(index) {
+        slides[current].classList.remove("active");
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add("active");
+    }
+
+    function startAutoSlide() {
+        interval = setInterval(() => {
+            showSlide(current + 1);
+        }, 4000);
+    }
+
+    function resetAutoSlide() {
+        clearInterval(interval);
+        startAutoSlide();
+    }
+
+    prevBtn.addEventListener("click", () => {
+        showSlide(current - 1);
+        resetAutoSlide();
+    });
+
+    nextBtn.addEventListener("click", () => {
+        showSlide(current + 1);
+        resetAutoSlide();
+    });
+
+    startAutoSlide();
+});
+</script>
+
+
+
+</body>
+</html>
