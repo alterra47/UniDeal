@@ -16,7 +16,6 @@
 
 <body>
 
-{% load static %}
 
 <header class="navbar">
     <div class="container-nav">
@@ -24,8 +23,8 @@
             <span class="unib">Uni</span><span class="dealb">Deal</span>
         </h1>
         <nav class="nav-links">
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'signup' %}" class="btn-nav">Sign Up</a>
+            <a href="{% url 'signin_page' %}">Login</a>
+            <a href="{% url 'signup_page' %}" class="btn-nav">Sign Up</a>
         </nav>
     </div>
 </header>
@@ -106,8 +105,8 @@
     </p>
 
     <div class="gate-actions">
-        <a href="{% url 'signup' %}" class="btn-primary">Join Your Campus</a>
-        <a href="{% url 'login' %}" class="btn-secondary">Already a member? Login</a>
+        <a href="{% url 'signup_page' %}" class="btn-primary">Join Your Campus</a>
+        <a href="{% url 'signin_page' %}" class="btn-secondary">Already a member? Login</a>
 
     </div>
 </section>

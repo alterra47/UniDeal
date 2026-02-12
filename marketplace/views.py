@@ -1,13 +1,12 @@
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
-
 from .models import UserCredential
 from .serializer import SignupSerializer, SigninSerializer
+from django.shortcuts import render
+
 
 
 # ======================
@@ -17,37 +16,26 @@ from .serializer import SignupSerializer, SigninSerializer
 def landing_page(request):
     return render(request, "main-before-login.html")
 
-def login_page(request):
+def signin_page(request):
     return render(request, "login-main.html")
 
 def signup_page(request):
     return render(request, "signup-main.html")
 
 
-# ======================
-# AUTH HELPERS
-# ======================
-
 def get_token_for_user(user):
+    """Generate single JWT access token"""
     token = AccessToken()
-    token["user_id"] = user.id
-    token["username"] = user.username
+    token['username'] = user.username
     return str(token)
 
-
-# ======================
-# API VIEWS (JSON)
-# ======================
-
-@csrf_exempt
-@api_view(["POST"])
+@api_view(['POST'])
 def signup(request):
     serializer = SignupSerializer(data=request.data)
 
     if serializer.is_valid():
         user = serializer.save()
         token = get_token_for_user(user)
-
         return Response(
             {
                 "message": "User registered successfully",
@@ -59,16 +47,15 @@ def signup(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@csrf_exempt
-@api_view(["POST"])
+@api_view(['POST'])
 def signin(request):
     serializer = SigninSerializer(data=request.data)
 
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    username = serializer.validated_data["username"]
-    password = serializer.validated_data["password"]
+    username = serializer.validated_data['username']
+    password = serializer.validated_data['password']
 
     try:
         user = UserCredential.objects.get(username=username)

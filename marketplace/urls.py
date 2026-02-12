@@ -1,20 +1,13 @@
 from django.urls import path
-from .views import (
-    landing_page,
-    login_page,
-    signup_page,
-    signup,
-    signin,
-)
+from . import views
 
 urlpatterns = [
     # Pages
-    path("", landing_page, name="landing"),
-    path("login/", login_page, name="login"),
-    path("signup/", signup_page, name="signup"),
-
+    path('', views.landing_page, name='landing'),
+    path('signin/', views.signin_page, name='signin_page'),
+    path('signup/', views.signup_page, name='signup_page'),
 
     # APIs
-    path("api/signup/", signup, name="api-signup"),
-    path("api/signin/", signin, name="api-signin"),
+    path('api/signin/', views.signin, name='signin_api'),
+    path('api/signup/', views.signup, name='signup_api'),
 ]
