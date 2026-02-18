@@ -11,6 +11,8 @@ $(document).ready(function () {
         e.preventDefault();
         $(".error").text("");
 
+        //console.log("Doing signup");
+
         const username = $("#signupUsername").val()?.trim();
         const password = $("#signupPassword").val()?.trim();
         const confirm  = $("#signupConfirm").val()?.trim();
@@ -55,6 +57,8 @@ $(document).ready(function () {
     $("#loginForm").on("submit", async function (e) {
         e.preventDefault();
         $(".error").text("");
+
+        console.log("Doing login");
 
         const username = $("#loginUsername").val()?.trim();
         const password = $("#loginPassword").val()?.trim();
