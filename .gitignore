@@ -13,7 +13,7 @@ env/
 *.sqlite3
 
 # Static & Media
-static/
+# !static/
 media/
 
 # Sensitive Info
