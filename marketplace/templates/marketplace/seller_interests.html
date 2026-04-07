@@ -1,0 +1,114 @@
+{% extends "marketplace/base.html" %}
+{% block title %}Incoming Interests — UniDeal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header animate-in">
+        <h1><i class="bi bi-heart-fill" style="color:var(--ud-accent)"></i> Incoming Interests</h1>
+        <p class="subtitle">Buyers interested in your products</p>
+    </div>
+
+    {% if interests %}
+    <div class="card-glass p-0 animate-in" style="overflow:hidden">
+        <div class="table-responsive">
+            <table class="table table-dark-custom mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Buyer</th>
+                        <th>Product</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Buyer Contact</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interest in interests %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--ud-primary),var(--ud-accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.8rem">
+                                    {{ interest.buyer.username|first|upper }}
+                                </div>
+                                <span style="font-weight:600">{{ interest.buyer.username }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'product_detail' interest.product.id %}" style="color:var(--ud-text);text-decoration:none;font-weight:500">
+                                {{ interest.product.title|truncatewords:4 }}
+                            </a>
+                        </td>
+                        <td style="font-size:.85rem;max-width:200px">
+                            {% if interest.message %}
+                            {{ interest.message|truncatewords:10 }}
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ interest.status }} px-3 py-1">{{ interest.get_status_display }}</span>
+                        </td>
+                        <td>
+                            {% if interest.status == 'accepted' %}
+                            <div style="font-size:.85rem">
+                                {% if interest.buyer.email %}
+                                <div><i class="bi bi-envelope"></i> {{ interest.buyer.email }}</div>
+                                {% endif %}
+                                {% if interest.buyer.phone %}
+                                <div><i class="bi bi-phone"></i> {{ interest.buyer.phone }}</div>
+                                {% endif %}
+                            </div>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size:.85rem;color:var(--ud-text-muted)">{{ interest.created_at|date:"M d" }}</td>
+                        <td>
+                            {% if interest.status == 'pending' %}
+                            <div class="d-flex gap-1">
+                                <form method="POST" action="{% url 'respond_interest' interest.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="accept">
+                                    <button type="submit" class="btn btn-sm btn-ud-accent" title="Accept">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{% url 'respond_interest' interest.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="reject">
+                                    <button type="submit" class="btn btn-sm btn-ud-danger" title="Reject">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            {% elif interest.status == 'accepted' %}
+                                {% if interest.product.status == 'sold' %}
+                                <span class="badge badge-sold px-2 py-1"><i class="bi bi-check2-all"></i> Completed</span>
+                                {% else %}
+                                <form method="POST" action="{% url 'complete_transaction' interest.id %}" onsubmit="return confirm('Mark as sold to this buyer?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-ud-primary" title="Complete Sale">
+                                        <i class="bi bi-bag-check"></i> Mark Sold
+                                    </button>
+                                </form>
+                                {% endif %}
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state animate-in">
+        <i class="bi bi-heart"></i>
+        <h4>No interests yet</h4>
+        <p>When buyers express interest in your products, you'll see them here.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

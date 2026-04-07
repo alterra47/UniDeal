@@ -1,0 +1,137 @@
+{% extends "marketplace/base.html" %}
+{% block title %}Seller Dashboard — UniDeal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header animate-in">
+        <h1><i class="bi bi-speedometer2" style="color:var(--ud-primary)"></i> Seller Dashboard</h1>
+        <p class="subtitle">Welcome back, {{ current_user.username }}!</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3 animate-in">
+            <div class="stat-card">
+                <div class="stat-num">{{ pending_count }}</div>
+                <div class="stat-label"><i class="bi bi-hourglass-split"></i> Pending</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 animate-in">
+            <div class="stat-card">
+                <div class="stat-num">{{ approved_count }}</div>
+                <div class="stat-label"><i class="bi bi-check-circle"></i> Approved</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 animate-in">
+            <div class="stat-card">
+                <div class="stat-num">{{ sold_count }}</div>
+                <div class="stat-label"><i class="bi bi-bag-check"></i> Sold</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 animate-in">
+            <div class="stat-card">
+                <div class="stat-num">{{ rejected_count }}</div>
+                <div class="stat-label"><i class="bi bi-x-circle"></i> Rejected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="d-flex gap-2 mb-4 animate-in">
+        <a href="{% url 'add_product' %}" class="btn btn-ud-primary">
+            <i class="bi bi-plus-circle"></i> Add New Product
+        </a>
+        <a href="{% url 'seller_interests' %}" class="btn btn-ud-outline">
+            <i class="bi bi-heart"></i> View Interests
+        </a>
+        <a href="{% url 'seller_history' %}" class="btn btn-ud-outline">
+            <i class="bi bi-clock-history"></i> Sales History
+        </a>
+    </div>
+
+    <!-- Product List -->
+    {% if products %}
+    <div class="card-glass p-0 animate-in" style="overflow:hidden">
+        <div class="table-responsive">
+            <table class="table table-dark-custom mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Interests</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}" alt="" style="width:44px;height:44px;object-fit:cover;border-radius:8px">
+                                {% endif %}
+                                <div>
+                                    <div style="font-weight:600">{{ product.title }}</div>
+                                    <small style="color:var(--ud-text-muted)">{{ product.created_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color:var(--ud-accent);font-weight:700">₹{{ product.price }}</td>
+                        <td>{{ product.get_category_display }}</td>
+                        <td>
+                            <span class="badge badge-{{ product.status }} px-3 py-1">{{ product.get_status_display }}</span>
+                            {% if product.admin_remarks %}
+                            <br><small class="text-muted" title="{{ product.admin_remarks }}"><i class="bi bi-info-circle"></i> {{ product.admin_remarks|truncatewords:5 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ product.interests.count }}</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <a href="{% url 'edit_product' product.id %}" class="btn btn-sm btn-ud-outline" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-ud-outline" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form method="POST" action="{% url 'delete_product' product.id %}" onsubmit="return confirm('Delete this product?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-ud-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                {% if product.status == 'approved' %}
+                                    {% for interest in product.interests.all %}
+                                        {% if interest.status == 'accepted' %}
+                                        <form method="POST" action="{% url 'complete_transaction' interest.id %}" onsubmit="return confirm('Mark as sold to {{ interest.buyer.username }}?')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-ud-accent" title="Mark Sold to {{ interest.buyer.username }}">
+                                                <i class="bi bi-bag-check"></i> Sold to {{ interest.buyer.username }}
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state animate-in">
+        <i class="bi bi-shop"></i>
+        <h4>No products yet</h4>
+        <p>Start selling by adding your first product!</p>
+        <a href="{% url 'add_product' %}" class="btn btn-ud-primary mt-2">
+            <i class="bi bi-plus-circle"></i> Add Product
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "marketplace/base.html" %}
+{% block title %}{{ product.title }} — UniDeal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <a href="{% url 'browse_products' %}" class="btn btn-ud-outline btn-sm mb-3">
+        <i class="bi bi-arrow-left"></i> Back to Browse
+    </a>
+
+    <div class="row g-4">
+        <!-- Left: Images -->
+        <div class="col-lg-7 animate-in">
+            {% if product.images.all %}
+            <div id="productCarousel" class="carousel slide product-carousel" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for img in product.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ img.image.url }}" alt="{{ product.title }}" class="d-block w-100">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if product.images.count > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Thumbnails -->
+            {% if product.images.count > 1 %}
+            <div class="d-flex gap-2 mt-2">
+                {% for img in product.images.all %}
+                <img src="{{ img.image.url }}" alt="thumb" style="width:80px;height:80px;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid var(--ud-border)" 
+                     onclick="$('#productCarousel').carousel({{ forloop.counter0 }})">
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center" style="height:400px;background:var(--ud-surface);border-radius:16px">
+                <i class="bi bi-image" style="font-size:5rem;color:var(--ud-border)"></i>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right: Product Info -->
+        <div class="col-lg-5 animate-in">
+            <div class="card-glass p-4">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge badge-{{ product.status }} px-3 py-2">{{ product.get_status_display }}</span>
+                    <small class="text-muted"><i class="bi bi-clock"></i> {{ product.created_at|timesince }} ago</small>
+                </div>
+
+                <h2 class="mb-1" style="font-weight:800;letter-spacing:-0.5px">{{ product.title }}</h2>
+                <div style="font-size:1.8rem;font-weight:800;color:var(--ud-accent)">₹{{ product.price }}</div>
+
+                <div class="d-flex gap-3 mt-2 mb-3" style="color:var(--ud-text-muted);font-size:.9rem">
+                    <span><i class="bi bi-tag-fill"></i> {{ product.get_category_display }}</span>
+                    <span><i class="bi bi-star-fill"></i> {{ product.get_condition_display }}</span>
+                </div>
+
+                <hr style="border-color:var(--ud-border)">
+
+                <h6 style="font-weight:700;color:var(--ud-text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:1px">Description</h6>
+                <p style="line-height:1.7">{{ product.description }}</p>
+
+                <hr style="border-color:var(--ud-border)">
+
+                <h6 style="font-weight:700;color:var(--ud-text-muted);font-size:.8rem;text-transform:uppercase;letter-spacing:1px">Seller</h6>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--ud-primary),var(--ud-accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff">
+                        {{ product.seller.username|first|upper }}
+                    </div>
+                    <div>
+                        <div style="font-weight:600">{{ product.seller.username }}</div>
+                        <div style="font-size:.8rem;color:var(--ud-text-muted)">Member since {{ product.seller.created_at|date:"M Y" }}</div>
+                    </div>
+                </div>
+
+                <!-- Interest Button (Buyer Only) -->
+                {% if current_user and current_user.role == 'buyer' and product.status == 'approved' %}
+                    {% if has_interest %}
+                    <div class="alert" style="background:rgba(0,206,201,.1);color:var(--ud-accent);border:1px solid rgba(0,206,201,.3)">
+                        <i class="bi bi-check-circle-fill"></i> You've expressed interest in this product!
+                    </div>
+                    {% else %}
+                    <button class="btn btn-ud-accent w-100 py-2 mb-2" data-bs-toggle="modal" data-bs-target="#interestModal">
+                        <i class="bi bi-heart-fill"></i> I'm Interested
+                    </button>
+                    {% endif %}
+                {% elif not current_user %}
+                <a href="{% url 'login' %}" class="btn btn-ud-primary w-100 py-2 mb-2">
+                    <i class="bi bi-box-arrow-in-right"></i> Login to Express Interest
+                </a>
+                {% endif %}
+
+                <!-- Report Button -->
+                {% if current_user %}
+                <button class="btn btn-ud-outline btn-sm w-100" data-bs-toggle="modal" data-bs-target="#reportModal">
+                    <i class="bi bi-flag"></i> Report this Product
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="row mt-5">
+        <div class="col-lg-8">
+            <div class="card-glass p-4 animate-in">
+                <h4 style="font-weight:700">
+                    <i class="bi bi-chat-dots" style="color:var(--ud-primary)"></i> Comments
+                    <span class="badge bg-secondary ms-1" style="font-size:.7rem">{{ comments|length }}</span>
+                </h4>
+
+                {% if current_user %}
+                <form method="POST" action="{% url 'add_comment' product.id %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="text" placeholder="Write a comment..." required>
+                        <button type="submit" class="btn btn-ud-primary">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </form>
+                {% endif %}
+
+                {% if comments %}
+                {% for comment in comments %}
+                <div class="d-flex gap-3 mb-3 p-3" style="background:var(--ud-surface-alt);border-radius:12px">
+                    <div style="width:36px;height:36px;min-width:36px;border-radius:50%;background:linear-gradient(135deg,var(--ud-primary),var(--ud-accent));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.85rem">
+                        {{ comment.user.username|first|upper }}
+                    </div>
+                    <div>
+                        <div>
+                            <span style="font-weight:600">{{ comment.user.username }}</span>
+                            <span style="font-size:.75rem;color:var(--ud-text-muted);margin-left:.5rem">{{ comment.created_at|timesince }} ago</span>
+                        </div>
+                        <p class="mb-0 mt-1" style="font-size:.9rem">{{ comment.text }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interest Modal -->
+{% if current_user and current_user.role == 'buyer' and not has_interest %}
+<div class="modal fade" id="interestModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:var(--ud-surface);border:1px solid var(--ud-border);border-radius:16px">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" style="font-weight:700"><i class="bi bi-heart-fill" style="color:var(--ud-accent)"></i> Express Interest</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'express_interest' product.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p style="color:var(--ud-text-muted)">Let the seller know you're interested in <strong>{{ product.title }}</strong></p>
+                    <label class="form-label">Message (optional)</label>
+                    <textarea class="form-control" name="message" rows="3" placeholder="Hi, I'm interested in this product..."></textarea>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-ud-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ud-accent">
+                        <i class="bi bi-send-fill"></i> Send Interest
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Report Modal -->
+{% if current_user %}
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:var(--ud-surface);border:1px solid var(--ud-border);border-radius:16px">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" style="font-weight:700"><i class="bi bi-flag-fill" style="color:var(--ud-danger)"></i> Report Product</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{% url 'report_product' product.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Reason</label>
+                        <select class="form-select" name="reason" required>
+                            {% for val, label in report_reasons %}
+                            <option value="{{ val }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Details (optional)</label>
+                        <textarea class="form-control" name="description" rows="3" placeholder="Describe the issue..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-ud-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ud-danger">
+                        <i class="bi bi-flag-fill"></i> Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

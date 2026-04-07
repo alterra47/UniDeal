@@ -1,0 +1,116 @@
+{% extends "marketplace/base.html" %}
+{% block title %}Edit Product — UniDeal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header animate-in">
+        <h1><i class="bi bi-pencil-square" style="color:var(--ud-primary)"></i> Edit Product</h1>
+        <p class="subtitle">Update your listing — it will be re-submitted for approval</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 animate-in">
+            <div class="card-glass p-4">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Product Title *</label>
+                        <input type="text" class="form-control" name="title" value="{{ product.title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-control" name="description" rows="4" required>{{ product.description }}</textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Price (₹) *</label>
+                            <input type="number" class="form-control" name="price" value="{{ product.price }}" step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category">
+                                {% for val, label in categories %}
+                                <option value="{{ val }}" {% if product.category == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Condition</label>
+                            <select class="form-select" name="condition">
+                                {% for val, label in conditions %}
+                                <option value="{{ val }}" {% if product.condition == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Existing Images -->
+                    {% if product.images.all %}
+                    <div class="mb-3">
+                        <label class="form-label">Current Images</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% for img in product.images.all %}
+                            <div style="position:relative">
+                                <img src="{{ img.image.url }}" alt="" style="width:100px;height:100px;object-fit:cover;border-radius:10px;border:2px solid var(--ud-border)">
+                                {% if img.is_primary %}
+                                <span class="badge bg-success" style="position:absolute;top:4px;left:4px;font-size:.6rem">Primary</span>
+                                {% endif %}
+                                <div class="form-check mt-1">
+                                    <input class="form-check-input" type="checkbox" name="remove_images" value="{{ img.id }}" id="rmImg{{ img.id }}">
+                                    <label class="form-check-label" for="rmImg{{ img.id }}" style="font-size:.75rem;color:var(--ud-danger)">Remove</label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- New Images -->
+                    <div class="mb-4">
+                        <label class="form-label">Add More Images</label>
+                        <div class="upload-zone" onclick="$('#imageInput').click()">
+                            <i class="bi bi-cloud-arrow-up d-block"></i>
+                            <div style="font-weight:600">Click to add images</div>
+                        </div>
+                        <input type="file" class="d-none" name="images" id="imageInput" multiple accept="image/*">
+                        <div class="preview-grid" id="previewGrid"></div>
+                    </div>
+
+                    <div class="alert" style="background:rgba(253,203,110,.1);color:var(--ud-warning);border:1px solid rgba(253,203,110,.2)">
+                        <i class="bi bi-info-circle-fill"></i> Editing will reset the status to "Pending" for admin re-approval.
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-ud-primary px-4">
+                            <i class="bi bi-check-circle"></i> Update Product
+                        </button>
+                        <a href="{% url 'seller_dashboard' %}" class="btn btn-ud-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(function() {
+    $('#imageInput').on('change', function() {
+        const $grid = $('#previewGrid');
+        $grid.empty();
+        const files = this.files;
+        for(let i = 0; i < Math.min(files.length, 5); i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $grid.append(`<img src="${e.target.result}" class="preview-item" alt="Preview">`);
+            };
+            reader.readAsDataURL(files[i]);
+        }
+    });
+});
+</script>
+{% endblock %}

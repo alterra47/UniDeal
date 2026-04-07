@@ -1,0 +1,83 @@
+{% extends "marketplace/base.html" %}
+{% block title %}All Products — UniDeal Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header animate-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-box-seam" style="color:var(--ud-primary)"></i> All Products</h1>
+                <p class="subtitle">Manage all product listings</p>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-ud-outline">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    {% if products %}
+    <div class="card-glass p-0 animate-in" style="overflow:hidden">
+        <div class="table-responsive">
+            <table class="table table-dark-custom mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Seller</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Reports</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:8px">
+                                {% endif %}
+                                <a href="{% url 'product_detail' product.id %}" style="color:var(--ud-text);text-decoration:none;font-weight:600">
+                                    {{ product.title|truncatewords:5 }}
+                                </a>
+                            </div>
+                        </td>
+                        <td>{{ product.seller.username }}</td>
+                        <td style="color:var(--ud-accent);font-weight:700">₹{{ product.price }}</td>
+                        <td>{{ product.get_category_display }}</td>
+                        <td><span class="badge badge-{{ product.status }} px-2 py-1">{{ product.get_status_display }}</span></td>
+                        <td>
+                            {% if product.reports.count > 0 %}
+                            <span class="badge badge-rejected">{{ product.reports.count }}</span>
+                            {% else %}
+                            <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if product.status != 'removed' %}
+                            <form method="POST" action="{% url 'admin_remove_product' product.id %}" onsubmit="return confirm('Remove this product from the marketplace?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-ud-danger">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted">Removed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state animate-in">
+        <i class="bi bi-box-seam"></i>
+        <h4>No products</h4>
+        <p>No products have been listed yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
