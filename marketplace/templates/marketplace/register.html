@@ -1,0 +1,77 @@
+{% extends "marketplace/base.html" %}
+{% block title %}Register — UniDeal{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height:80vh">
+    <div class="auth-card animate-in">
+        <div class="text-center">
+            <h2><i class="bi bi-lightning-charge-fill" style="color:var(--ud-primary)"></i> Join UniDeal</h2>
+            <p class="auth-subtitle">Create your campus marketplace account</p>
+        </div>
+
+        <form method="POST" id="registerForm">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" placeholder="Choose a username" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" placeholder="your@university.edu">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control" name="phone" placeholder="+91 XXXXXXXXXX">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Min 6 characters" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="confirm_password" placeholder="Re-enter password" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label d-block">I want to</label>
+                <div class="role-selector">
+                    <div class="role-option selected" data-role="buyer" onclick="selectRole(this, 'buyer')">
+                        <i class="bi bi-bag-heart-fill" style="color:var(--ud-accent)"></i>
+                        <div class="role-name">Buy</div>
+                        <div class="role-desc">Browse & purchase items</div>
+                    </div>
+                    <div class="role-option" data-role="seller" onclick="selectRole(this, 'seller')">
+                        <i class="bi bi-shop" style="color:var(--ud-primary-light)"></i>
+                        <div class="role-name">Sell</div>
+                        <div class="role-desc">List items for sale</div>
+                    </div>
+                </div>
+                <input type="hidden" name="role" id="roleInput" value="buyer">
+            </div>
+
+            <button type="submit" class="btn btn-ud-primary w-100 py-2">
+                <i class="bi bi-rocket-takeoff"></i> Create Account
+            </button>
+        </form>
+
+        <p class="text-center mt-3 mb-0" style="font-size:.9rem;color:var(--ud-text-muted)">
+            Already have an account? <a href="{% url 'login' %}" style="color:var(--ud-primary-light)">Sign In</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectRole(el, role) {
+    $('.role-option').removeClass('selected');
+    $(el).addClass('selected');
+    $('#roleInput').val(role);
+}
+</script>
+{% endblock %}

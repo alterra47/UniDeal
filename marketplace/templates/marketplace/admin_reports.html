@@ -1,0 +1,88 @@
+{% extends "marketplace/base.html" %}
+{% block title %}Reports — UniDeal Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header animate-in">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="bi bi-flag-fill" style="color:var(--ud-danger)"></i> Reports</h1>
+                <p class="subtitle">Review reported products and sellers</p>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-ud-outline">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    {% if reports %}
+    <div class="card-glass p-0 animate-in" style="overflow:hidden">
+        <div class="table-responsive">
+            <table class="table table-dark-custom mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Seller</th>
+                        <th>Reported By</th>
+                        <th>Reason</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'product_detail' report.product.id %}" style="color:var(--ud-text);text-decoration:none;font-weight:600">
+                                {{ report.product.title|truncatewords:4 }}
+                            </a>
+                        </td>
+                        <td>{{ report.product.seller.username }}</td>
+                        <td>{{ report.reporter.username }}</td>
+                        <td><span class="badge badge-rejected px-2 py-1">{{ report.get_reason_display }}</span></td>
+                        <td style="font-size:.85rem;max-width:200px">
+                            {% if report.description %}
+                            {{ report.description|truncatewords:12 }}
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size:.85rem;color:var(--ud-text-muted)">{{ report.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <form method="POST" action="{% url 'admin_remove_product' report.product.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-ud-danger" title="Remove Product">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{% url 'admin_ban_seller' report.product.seller.id %}" onsubmit="return confirm('Ban this seller?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-ud-danger" title="Ban Seller" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">
+                                        <i class="bi bi-person-x"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{% url 'admin_resolve_report' report.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-ud-accent" title="Mark Resolved">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state animate-in">
+        <i class="bi bi-flag"></i>
+        <h4>No open reports</h4>
+        <p>All reports have been resolved. 🎉</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

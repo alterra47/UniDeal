@@ -1,0 +1,91 @@
+{% extends "marketplace/base.html" %}
+{% block title %}Browse Products — UniDeal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="page-header animate-in">
+        <h1><i class="bi bi-grid-3x3-gap-fill" style="color:var(--ud-primary)"></i> Marketplace</h1>
+        <p class="subtitle">Discover amazing deals from fellow students</p>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="card-glass p-3 mb-4 animate-in">
+        <form method="GET" class="row g-3 align-items-end" id="filterForm">
+            <div class="col-md-5">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text" style="background:var(--ud-surface-alt);border-color:var(--ud-border);color:var(--ud-text-muted)">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" name="search" placeholder="Search products..." value="{{ search }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" name="category">
+                    <option value="">All Categories</option>
+                    {% for val, label in categories %}
+                    <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Condition</label>
+                <select class="form-select" name="condition">
+                    <option value="">Any</option>
+                    {% for val, label in conditions %}
+                    <option value="{{ val }}" {% if condition == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-ud-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Product Grid -->
+    {% if products %}
+    <div class="row g-4">
+        {% for product in products %}
+        <div class="col-sm-6 col-md-4 col-lg-3 animate-in">
+            <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
+                <div class="product-card">
+                    {% if product.primary_image %}
+                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.title }}" class="product-img">
+                    {% else %}
+                    <div class="product-img d-flex align-items-center justify-content-center" style="background:var(--ud-surface-alt)">
+                        <i class="bi bi-image" style="font-size:3rem;color:var(--ud-border)"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="product-title text-light">{{ product.title }}</div>
+                        <div class="product-price">₹{{ product.price }}</div>
+                        <div class="product-meta mt-1">
+                            <span><i class="bi bi-tag"></i> {{ product.get_category_display }}</span>
+                            <span class="ms-2"><i class="bi bi-star"></i> {{ product.get_condition_display }}</span>
+                        </div>
+                        <div class="card-footer-custom">
+                            <small class="product-meta">
+                                <i class="bi bi-person"></i> {{ product.seller.username }}
+                                · <i class="bi bi-clock"></i> {{ product.created_at|timesince }} ago
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-box-seam"></i>
+        <h4>No products found</h4>
+        <p>Try adjusting your search or filters</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
