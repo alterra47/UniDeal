@@ -9,6 +9,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('django-admin/', admin.site.urls),
     path('', include('marketplace.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("marketplace.urls")),
 ]
 
 if settings.DEBUG:

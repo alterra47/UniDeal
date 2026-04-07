@@ -46,6 +46,9 @@ source venv/bin/activate
 
 # Install dependencies
 pip install django
+pip install djangorestframework
+pip install djangorestframework-simplejwt
+pip install bcrypt
 
 ```
 
@@ -64,14 +67,15 @@ python manage.py runserver
 
 ```text
 unideal/
-├── core/               # Global settings and URL routing
+├── core/               # Buisness Logic
 ├── templates/          # Global Bootstrap base and shared components
 ├── marketplace/        # Main app for listings and user profiles
-│   ├── services.py     # Business logic (Design Principle: SRP)
+│   ├── services.py     # (Design Principle: SRP)
 │   ├── tests/          # Unit and Integration tests
 │   └── static/         # jQuery scripts and custom CSS
 ├── manage.py
 └── .gitignore
+├── docs/               # Add diagrams for signup, login here; Files that explain the working of this project and its components
 
 ```
 
