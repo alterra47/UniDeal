@@ -1,8 +1,10 @@
-# UniDeal: Campus Marketplace & Auction 🎓
+***
+
+# UniDeal: Campus Marketplace & Auction 
 
 **UniDeal** is a web-based marketplace designed for students to buy, sell, and auction items within the campus ecosystem. Built with a focus on clean architecture and scalable software design.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 * **Backend:** Django (Python)
 * **Frontend:** Bootstrap 5, jQuery
@@ -10,7 +12,7 @@
 
 ---
 
-## 🏗 Software Design Principles
+## Software Design Principles
 
 To keep the codebase maintainable as we add the auction feature, we follow these rules:
 
@@ -21,7 +23,7 @@ To keep the codebase maintainable as we add the auction feature, we follow these
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Prerequisites
 
@@ -49,7 +51,6 @@ pip install django
 pip install djangorestframework
 pip install djangorestframework-simplejwt
 pip install bcrypt
-
 ```
 
 ### 3. Database Setup
@@ -58,16 +59,67 @@ pip install bcrypt
 python manage.py migrate
 python manage.py createsuperuser  # Create an admin account
 python manage.py runserver
-
 ```
 
 ---
 
-## 📂 Project Structure
+##  Endpoints
+
+### Auth & API Routes
+| Endpoint | Method | Role | Description |
+| :--- | :--- | :--- | :--- |
+| `/api/signup/` | `POST` | Any | Register user (JWT) |
+| `/api/signin/` | `POST` | Any | Login user (JWT) |
+| `/register/` | `GET`, `POST` | Any | Template-based registration |
+| `/login/` | `GET`, `POST` | Any | Template-based login |
+| `/logout/` | `GET` | Authenticated | Destroy session and logout |
+
+### Marketplace (General & Buyer)
+| Endpoint | Method | Role | Description |
+| :--- | :--- | :--- | :--- |
+| `/` | `GET` | Any | Browse approved products |
+| `/product/<id>/` | `GET` | Any | View product details |
+| `/product/<id>/interest/` | `POST` | Buyer | Express interest in buying |
+| `/product/<id>/comment/` | `POST` | Authenticated | Add a public comment |
+| `/product/<id>/report/` | `POST` | Authenticated | Report product to admin |
+| `/buyer/interests/` | `GET` | Buyer | View expressed interests |
+| `/buyer/history/` | `GET` | Buyer | View past transactions |
+
+### Seller Panel
+| Endpoint | Method | Role | Description |
+| :--- | :--- | :--- | :--- |
+| `/seller/dashboard/` | `GET` | Seller | View product stats & status |
+| `/seller/product/add/` | `GET`, `POST` | Seller | Add a new product |
+| `/seller/product/<id>/edit/` | `GET`, `POST` | Seller | Update an existing product |
+| `/seller/product/<id>/delete/`| `POST` | Seller | Delete a product |
+| `/seller/interests/` | `GET` | Seller | View incoming buyer interests |
+| `/seller/interest/<id>/respond/`| `POST` | Seller | Accept or reject an interest |
+| `/seller/interest/<id>/complete/`| `POST` | Seller | Mark item as sold |
+| `/seller/history/` | `GET` | Seller | View past sales |
+
+### Admin Panel
+| Endpoint | Method | Role | Description |
+| :--- | :--- | :--- | :--- |
+| `/admin-panel/login/` | `GET`, `POST` | Any | Admin login portal |
+| `/admin-panel/logout/` | `GET` | Admin | Admin logout |
+| `/admin-panel/dashboard/` | `GET` | Admin | View platform stats |
+| `/admin-panel/products/pending/`| `GET` | Admin | View products awaiting approval |
+| `/admin-panel/products/` | `GET` | Admin | View all platform products |
+| `/admin-panel/product/<id>/approve/`| `POST` | Admin | Approve a product listing |
+| `/admin-panel/product/<id>/reject/` | `POST` | Admin | Reject a product listing |
+| `/admin-panel/product/<id>/remove/` | `POST` | Admin | Delete a product from site |
+| `/admin-panel/users/` | `GET` | Admin | View all registered users |
+| `/admin-panel/seller/<id>/ban/` | `POST` | Admin | Ban a seller & remove products |
+| `/admin-panel/reports/` | `GET` | Admin | View unresolved user reports |
+| `/admin-panel/report/<id>/resolve/` | `POST` | Admin | Mark a report as resolved |
+
+---
+
+##  Project Structure
 
 ```text
 unideal/
-├── core/               # Buisness Logic
+├── core/               # Business Logic
 ├── templates/          # Global Bootstrap base and shared components
 ├── marketplace/        # Main app for listings and user profiles
 │   ├── services.py     # (Design Principle: SRP)
@@ -76,18 +128,16 @@ unideal/
 ├── manage.py
 └── .gitignore
 ├── docs/               # Add diagrams for signup, login here; Files that explain the working of this project and its components
-
 ```
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 We use Django’s built-in testing framework. Ensure all tests pass before pushing to the main branch.
 
 ```bash
 python manage.py test
-
 ```
 
 ---
