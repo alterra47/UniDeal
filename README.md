@@ -56,6 +56,7 @@ pip install bcrypt
 ### 3. Database Setup
 
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser  # Create an admin account
 python manage.py runserver
