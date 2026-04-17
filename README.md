@@ -51,6 +51,7 @@ pip install django
 pip install djangorestframework
 pip install djangorestframework-simplejwt
 pip install bcrypt
+pip install Pillow
 ```
 
 ### 3. Database Setup
